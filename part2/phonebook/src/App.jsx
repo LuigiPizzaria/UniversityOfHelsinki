@@ -24,11 +24,10 @@ const App = () => {
       name: newName
     }
 
-    //check if the name already exists in the persons array. if it does, log a message, clear the input field, and return
-    while(persons.some(person => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
+    //check if name already exists once
+    if(persons.some(person => person.name === newName)) {
       setNewName('')
-      return
+      return alert(`${newName} is already added to phonebook`)
     }
 
     setPersons(persons.concat(nameObject))
