@@ -1,3 +1,14 @@
+
+const SumOfExercises = ({ parts }) => {
+  //0 is the initial value for the sum
+  var total = parts.reduce((sum, part) => sum + part.exercises, 0);
+  return (
+    <p>
+      <strong>Total of {total} exercises</strong>
+    </p>
+  )
+}
+
 const Part = ({ part }) => {
   return (
     <p>{part.name} {part.exercises}</p>
@@ -19,6 +30,7 @@ const Course = ({ course }) => {
         <Part key={part.id} part={part} />
       ))}
     </div>
+    <SumOfExercises parts={course.parts} />
   </div>
   )
 }
@@ -42,6 +54,12 @@ const App = () => {
         name: 'State of a component',
         exercises: 14,
         id: 3
+      }
+      ,
+      {
+        name: 'Redux',
+        exercises: 11,
+        id: 4
       }
     ]
   }
