@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -13,18 +16,10 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
 
-  const handleNameChange = (event) => {
-    setNewName(event.target.value)
-  }
-
-  const handleNumberChange = (event) => {
-    setNewNumber(event.target.value)
-  }
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value)
-    //filter the persons array based on the search term
-  }
+  const handleNameChange = (event) => setNewName(event.target.value)
+  const handleNumberChange = (event) => setNewNumber(event.target.value)
+  const handleSearchChange = (event) => setSearchTerm(event.target.value)
+  
 
   const addPhonebookEntry = (event) =>{
     event.preventDefault()
@@ -59,32 +54,12 @@ const App = () => {
 
   return (
     <div>
-      <h1>Phonebook</h1>
-      <div>
-        Search for name: <input value={searchTerm} onChange={handleSearchChange} />
-      </div>
-      <h2>Add new</h2>
-      <form onSubmit={addPhonebookEntry}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value ={newNumber} onChange={handleNumberChange}/>
-          </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      <div>
-        {filteredPersons.length === 0 ? (
-          <p>No entries found</p>
-        ) : (filteredPersons.map(person =>
-          <p key={person.id}>
-            {person.name} {person.number}
-          </p>
-        ))}
-      </div>
+      <h2>Phonebook</h2>
+      <Filter searchTerm={searchTerm} handleSearchChange={handleSearchChange} />
+      <h3>Add new</h3>
+      <PersonForm newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} addPhonebookEntry={addPhonebookEntry}/>
+      <h3>Numbers</h3>
+      <Persons persons={filteredPersons}/>
     </div>
   )
 }
