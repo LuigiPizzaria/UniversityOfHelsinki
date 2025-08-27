@@ -3,6 +3,7 @@ import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import personService from './services/persons'
 
 
 
@@ -11,13 +12,12 @@ const App = () => {
 
   //fill from json-server
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        console.log(response.data)
-        setPersons(response.data)
-      })
+    personService
+    .getAll()
+    .then(initialPersons => {
+      console.log(initialPersons)
+      setPersons(initialPersons)
+    })
   },[])
 
   //meant for controlling the input field for a new name
@@ -35,24 +35,58 @@ const App = () => {
 
     const phonebookObject = {
       name: newName,
-      number: newNumber,
-      id: persons[persons.length-1]?.id +1 || 0
+      number: newNumber
     }
 
     if(newName === '' || newNumber === '') {
       return alert('Name or number cannot be empty')
     }
 
-    //multiple people can share a phone number if they share a household so only check for duplicate names
+    //instead of adding duplicate names, update with new number
     if(persons.some(person => person.name === newName)) {
-      setNewName('')
-      setNewNumber('')
-      return alert(`${newName} is already added to phonebook`)
+      const confirm = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+      if(!confirm) {
+        setNewName('')
+        setNewNumber('')
+        return
+      }
+
+      const personToUpdate = persons.find(person => person.name === newName)
+      personService
+      .update(personToUpdate.id,phonebookObject)
+      .then(returnedPerson => {
+        setPersons(persons.map(person => person.id !== personToUpdate.id ? person : returnedPerson))
+        setNewName('')
+        setNewNumber('')
+      })
+      .catch(error => {
+        alert(`Information of ${newName} has already been removed from server`)
+        setPersons(persons.filter(person => person.id !== personToUpdate.id))
+      })
+      return
     }
 
-    setPersons(persons.concat(phonebookObject))
-    setNewName('')
-    setNewNumber('')
+    personService
+    .create(phonebookObject)
+    .then(returnedPerson => {
+      setPersons(persons.concat(returnedPerson))
+      setNewName('')
+      setNewNumber('')
+    })
+  }
+
+  const deletePerson = (id,name) => {
+    console.log('delete', id)
+
+    if(!window.confirm(`Delete ${name} ?`)){
+      return
+    }
+
+    personService
+    .deletePerson(id)
+    .then(() => {
+      setPersons(persons.filter(person => person.id !== id))
+    })
   }
 
   //convert the serach term and the names to lowercase for case-insensitive search
@@ -68,7 +102,7 @@ const App = () => {
       <h3>Add new</h3>
       <PersonForm newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} addPhonebookEntry={addPhonebookEntry}/>
       <h3>Numbers</h3>
-      <Persons persons={filteredPersons}/>
+      <Persons persons={filteredPersons} handleDelete={deletePerson}/>
     </div>
   )
 }

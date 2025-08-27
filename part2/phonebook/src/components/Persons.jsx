@@ -1,11 +1,14 @@
-const Persons = ({persons}) =>{
+const Persons = ({persons,handleDelete}) =>{
   return (
     <div>
         {persons.length === 0 ? (
           <p>No entries found</p>
         ) : (persons.map(person =>
-          <p key={person.id}>
+          <p 
+            key={person.id}>
             {person.name} {person.number}
+            <button onClick={() => handleDelete(person.id,person.name)}
+            >delete</button>
           </p>
         ))}
       </div>
