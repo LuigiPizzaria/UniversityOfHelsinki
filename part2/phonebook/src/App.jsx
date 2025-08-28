@@ -30,14 +30,13 @@ const App = () => {
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleNumberChange = (event) => setNewNumber(event.target.value)
   const handleSearchChange = (event) => setSearchTerm(event.target.value)
-  
-  const OperationMessage = (message) => {
-    setNotificationMessage(
-        `${message}`
-      )
-      setTimeout(() => {
-        setNotificationMessage(null)
-      },5000)
+
+  const showNotification = (message,type) => {
+    console.log('show notification',message,type)
+    setNotificationMessage({message,type})
+    setTimeout(() => {
+      setNotificationMessage(null)
+    },5000)
   }
 
   const addPhonebookEntry = (event) =>{
@@ -68,10 +67,10 @@ const App = () => {
         setPersons(persons.map(person => person.id !== personToUpdate.id ? person : returnedPerson))
         setNewName('')
         setNewNumber('')
-        OperationMessage(`Updated ${returnedPerson.name}`)
+        showNotification(`Updated ${returnedPerson.name}`,'success')
       })
       .catch(error => {
-        alert(`Information of ${newName} has already been removed from server`)
+        showNotification(`Information of ${personToUpdate.name} has already been removed from server`,'error')
         setPersons(persons.filter(person => person.id !== personToUpdate.id))
       })
       return
@@ -83,7 +82,7 @@ const App = () => {
       setPersons(persons.concat(returnedPerson))
       setNewName('')
       setNewNumber('')
-      OperationMessage(`Added ${returnedPerson.name}`)
+      showNotification(`Added ${returnedPerson.name}`,'success')
     })
   }
 
@@ -98,6 +97,10 @@ const App = () => {
     .deletePerson(id)
     .then(() => {
       setPersons(persons.filter(person => person.id !== id))
+    }).catch(error =>{
+      showNotification(`Information of ${name} has already been removed from server`,'error')
+      //remove person from the current list 
+      setPersons(persons.filter(person => person.id !== id))
     })
   }
 
@@ -110,7 +113,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notificationMessage} />
+      <Notification notification={notificationMessage} />
       <Filter searchTerm={searchTerm} handleSearchChange={handleSearchChange} />
       <h3>Add new</h3>
       <PersonForm newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} addPhonebookEntry={addPhonebookEntry}/>
