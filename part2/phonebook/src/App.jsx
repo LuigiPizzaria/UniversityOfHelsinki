@@ -3,6 +3,7 @@ import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 import personService from './services/persons'
 
 
@@ -24,11 +25,20 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleNumberChange = (event) => setNewNumber(event.target.value)
   const handleSearchChange = (event) => setSearchTerm(event.target.value)
   
+  const OperationMessage = (message) => {
+    setNotificationMessage(
+        `${message}`
+      )
+      setTimeout(() => {
+        setNotificationMessage(null)
+      },5000)
+  }
 
   const addPhonebookEntry = (event) =>{
     event.preventDefault()
@@ -58,6 +68,7 @@ const App = () => {
         setPersons(persons.map(person => person.id !== personToUpdate.id ? person : returnedPerson))
         setNewName('')
         setNewNumber('')
+        OperationMessage(`Updated ${returnedPerson.name}`)
       })
       .catch(error => {
         alert(`Information of ${newName} has already been removed from server`)
@@ -72,6 +83,7 @@ const App = () => {
       setPersons(persons.concat(returnedPerson))
       setNewName('')
       setNewNumber('')
+      OperationMessage(`Added ${returnedPerson.name}`)
     })
   }
 
@@ -98,6 +110,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage} />
       <Filter searchTerm={searchTerm} handleSearchChange={handleSearchChange} />
       <h3>Add new</h3>
       <PersonForm newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} addPhonebookEntry={addPhonebookEntry}/>
