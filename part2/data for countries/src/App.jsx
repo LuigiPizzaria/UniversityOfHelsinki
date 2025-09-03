@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import CountryList from './components/CountryList'
+import Country from './components/Country'
 
 const App = () => {
   const [filter, setFilter] = useState('')
   const [countries, setCountries] = useState(null)
   const [foundCountries, setFoundCountries] = useState([])
+  const [selectedCountry, setSelectedCountry] = useState(null)
 
   useEffect(() => {
     console.log('fetching countries...')
@@ -23,6 +25,7 @@ const App = () => {
     if(countries) {
       if(value === '') {
         setFoundCountries([])
+        setSelectedCountry(null)
       }
       else {
         const results = countries.filter(country => country.name.common.toLowerCase().includes(event.target.value.toLowerCase()))
@@ -35,7 +38,11 @@ const App = () => {
   return (
     <div>
         find countries: <input value={filter} onChange={handleChange} />
-        <CountryList countries={foundCountries} />
+        {/*if selecttedCountry is not null, show that, otherwise show the list of foundCountries*/}
+        {selectedCountry 
+          ? <Country country={selectedCountry} />
+          : <CountryList countries={foundCountries} onShow={setSelectedCountry} />
+        }
     </div>
   )
 }
