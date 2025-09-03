@@ -10,12 +10,10 @@ const App = () => {
   const [selectedCountry, setSelectedCountry] = useState(null)
 
   useEffect(() => {
-    console.log('fetching countries...')
     axios
       .get('https://studies.cs.helsinki.fi/restcountries/api/all')
       .then(response => {
         setCountries(response.data)
-        console.log(response.data)
       })
   },[])
 
@@ -30,6 +28,7 @@ const App = () => {
       else {
         const results = countries.filter(country => country.name.common.toLowerCase().includes(event.target.value.toLowerCase()))
         setFoundCountries(results)
+        setSelectedCountry(null)
         console.log(results)
       } 
     }
