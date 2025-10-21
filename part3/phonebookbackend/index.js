@@ -1,7 +1,10 @@
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
 
 app.use(express.json()) //for handling JSON in POSR requests
+app.use(morgan('tiny')) //for logging HTTP requests to the console
+
 
 let persons = [
     { 
